@@ -17,6 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/notes', (req, res) => {
   res.sendFile(path.join(__dirname, '../../notes.html'));
+  res.status(200);
 });
 
 app.get('/api/notes', (req, res) => {
@@ -34,50 +35,62 @@ app.post('/api/notes', (req, res) => {
       text,
       note_id: uuidv4()
     }
+
+    fs.readFile('../../../db/db.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+      } else {
+        const parsedNotes = JSON.parse(data);
+        parsedNotes.push(newNote);
+  
+        //////////////////////////// This might be the reason why null is being printed in the console. Ask instructor for help.
+        fs.writeFile('../../../db/db.json', JSON.stringify(parsedNotes, null, 2), (writeErr) => console.error(writeErr));
+      }
+    });
+  
+/*     const response = {
+      status: 'success',
+      body: newNote
+    }; */
+
+    res.status(201);
+  } else {
+    res.status(500).json('Error occured while posting note');
   }
-
-  fs.readFile('../../../db/db.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      const parsedNotes = JSON.parse(data);
-      parsedNotes.push(newNote);
-
-      fs.writeFile('../../../db/db.json', JSON.stringify(parsedNotes, null, 2), (writeErr) => console.error(writeErr));
-    }
-  });
-
-/*   const response = {
-    status: 'success',
-    body: newNote
-  }; */
-  res.status(201);
 });
 
 app.delete('/api/notes/:note_id', (req, res) => {
   const reqDelNote = req.params.note_id;
   
-  for (const i = 0; i < savedNotes.length; i++) {
-    if (reqDelNote === savedNotes[i].note_id) {
-      fs.readFile('../../db/db.json', 'utf8', (err, data) => {
-        if (err) {
-          console.error(err);
-        } else {
-          const parsedNotes = JSON.parse(data);
-          parsedNotes.splice(i, 1);
+  if (reqDelNote) {
+    for (let i = 0; i < savedNotes.length; i++) {
+      if (reqDelNote === savedNotes[i].note_id) {
+        fs.readFile('../../../db/db.json', 'utf8', (err, data) => {
+          if (err) {
+            console.error(err);
+          } else {
+            const parsedNotes = JSON.parse(data);
+            parsedNotes.splice(i, 1);
 
-          fs.writeFile('../../../db/db.json', JSON.stringify(parsedNotes, null, 2), (writeErr) => console.error(writeErr));
-        }
-      });
+            fs.writeFile('../../../db/db.json', JSON.stringify(parsedNotes, null, 2), (writeErr) => console.error(writeErr));
+          }
+        });
+        
+        // Need to find correct status code for DELETE route (probs not 200)
+        res.status(200);
+        return;
+      }
     }
+    res.status(404).json('404: File not found');
+  } else {
+    res.status(400).json('400: note_id not provided');
   }
-
-  // Need to find correct status code for DELETE route (probs not 200)
-  res.status(200);
+  
 });
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../index.html'));
+  res.status(200);
 });
 
 app.listen(PORT, () =>
