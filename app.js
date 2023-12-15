@@ -3,7 +3,6 @@ const app = express();
 const path = require('path');
 const api = require('./routes/index.js');
 
-// const PORT = 3005;
 // Modified port 3005 for Heroku
 const PORT = process.env.PORT || 3005;
 
