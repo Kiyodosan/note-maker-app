@@ -18,7 +18,7 @@ This project is a note-taking app that allows the user to write notes and store 
 ## How to run this project
 
 Click on the following image to visit the website:
-[![Note Maker App - demo](<assets/images/README File Generator - demo.png>)](https://drive.google.com/file/d/1pzjUvoc9_UUtpkVWRQYKrjUv07hlBSa-/view)
+[![Note Maker App - demo](<public/assets/images/Note Maker App - demo.png>)](https://note-maker-app-4cd516ff3d78.herokuapp.com/)
 
 Click the "Get Started" button to create a new note or view existing notes.
 
